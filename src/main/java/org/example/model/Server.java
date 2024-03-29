@@ -8,11 +8,17 @@ public class Server implements Runnable{
     private AtomicInteger noTasks;
     private AtomicInteger waitingPeriod;
 
+    private boolean simEnd;
+    public void setSimEnd(boolean simEnd) {
+        this.simEnd = simEnd;
+    }
+
     public Server(int maxNoTasks){
         tasks = new ArrayBlockingQueue<Task>(maxNoTasks);
         noTasks = new AtomicInteger(0);
+        waitingPeriod = new AtomicInteger(0);
+        simEnd = false;
     }
-
     public void addTask(Task t){
         tasks.add(t);
         noTasks.getAndIncrement();
@@ -28,20 +34,18 @@ public class Server implements Runnable{
         return noTasks.get();
     }
     public void run(){
-        int currentTime = 0;
         Task t = getCurrentTask();
 
-        while(true){
+        while(!simEnd){
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            currentTime+=1;
-            if (currentTime == t.getServiceTime() ){
+            t.decrementServiceTime();
+            waitingPeriod.addAndGet(-1);
+            if (t.getServiceTime() == 0){
                 noTasks.addAndGet(-1);
-                waitingPeriod.addAndGet(-t.getServiceTime());
-                currentTime = 0;
                 t = getCurrentTask();
             }
         }

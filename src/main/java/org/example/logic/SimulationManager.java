@@ -1,5 +1,6 @@
 package org.example.logic;
 
+import org.example.model.Server;
 import org.example.model.Task;
 
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class SimulationManager  implements Runnable{
         scheduler = new Scheduler(numberOfServers, numberOfClients, strategyPolicy);
         generatedTasks = new ArrayList<>();
         generateNRandomTasks(numberOfClients);
+        for(int i = 0; i < this.numberOfServers; i++){
+            scheduler.addServer();
+        }
     }
 
     public void run(){
@@ -42,6 +46,9 @@ public class SimulationManager  implements Runnable{
                 e.printStackTrace();
             }
             currentTime++;
+        }
+        for(Server server : scheduler.getServers()){
+            server.setSimEnd(true);
         }
     }
 

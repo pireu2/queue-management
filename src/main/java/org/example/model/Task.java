@@ -22,4 +22,9 @@ public class Task {
     public int getServiceTime(){
         return serviceTime;
     }
+    public void decrementServiceTime(){
+        if(serviceTime > 0){
+            serviceTime--;
+        }
+    }
 }

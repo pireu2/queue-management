@@ -15,6 +15,7 @@ public class ShortestQueueStrategy implements Strategy{
                 minServer = server;
             }
         }
+        assert minServer != null;
         minServer.addTask(task);
     }
 }

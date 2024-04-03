@@ -5,17 +5,18 @@ import org.example.logic.StrategyPolicy;
 import javax.swing.*;
 import java.awt.*;
 
-public class Configuration extends JFrame {
+public class ConfigurationView extends JFrame {
 
     private JTextField timeLimitField;
     private JTextField maxProcessingTimeField;
     private JTextField minProcessingTimeField;
     private JTextField numberOfServersField;
     private JTextField numberOfClientsField;
+    private JTextField minArrivalTimeField;
+    private JTextField maxArrivalTimeField;
     private JComboBox<String> strategyBox;
-    private JButton startButton;
 
-    public Configuration(){
+    public ConfigurationView(){
         setTitle("Queue Management System");
         setSize(500, 500);
         setLocationRelativeTo(null);
@@ -24,7 +25,7 @@ public class Configuration extends JFrame {
     }
     private void prepareFields(){
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(9,1));
+        panel.setLayout(new GridLayout(11,1));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setBackground(Color.WHITE);
 
@@ -46,6 +47,15 @@ public class Configuration extends JFrame {
         timeLimitPanel.add(timeLimitField);
         panel.add(timeLimitPanel);
 
+        JPanel minProcessingTimePanel = new JPanel();
+        minProcessingTimePanel.setLayout(new GridLayout(1, 2));
+        minProcessingTimePanel.setBackground(Color.WHITE);
+        JLabel minProcessingTimeLabel = new JLabel("Min processing time");
+        minProcessingTimeField = new JTextField(5);
+        minProcessingTimePanel.add(minProcessingTimeLabel);
+        minProcessingTimePanel.add(minProcessingTimeField);
+        panel.add(minProcessingTimePanel);
+
         JPanel maxProcessingTimePanel = new JPanel();
         maxProcessingTimePanel.setLayout(new GridLayout(1, 2));
         maxProcessingTimePanel.setBackground(Color.WHITE);
@@ -55,14 +65,23 @@ public class Configuration extends JFrame {
         maxProcessingTimePanel.add(maxProcessingTimeField);
         panel.add(maxProcessingTimePanel);
 
-        JPanel minProcessingTimePanel = new JPanel();
-        minProcessingTimePanel.setLayout(new GridLayout(1, 2));
-        minProcessingTimePanel.setBackground(Color.WHITE);
-        JLabel minProcessingTimeLabel = new JLabel("Min processing time");
-        minProcessingTimeField = new JTextField(5);
-        minProcessingTimePanel.add(minProcessingTimeLabel);
-        minProcessingTimePanel.add(minProcessingTimeField);
-        panel.add(minProcessingTimePanel);
+        JPanel minArrivalTimePanel = new JPanel();
+        minArrivalTimePanel.setLayout(new GridLayout(1, 2));
+        minArrivalTimePanel.setBackground(Color.WHITE);
+        JLabel minArrivalTimeLabel = new JLabel("Min arrival time");
+        minArrivalTimeField = new JTextField(5);
+        minArrivalTimePanel.add(minArrivalTimeLabel);
+        minArrivalTimePanel.add(minArrivalTimeField);
+        panel.add(minArrivalTimePanel);
+
+        JPanel maxArrivalTimePanel = new JPanel();
+        maxArrivalTimePanel.setLayout(new GridLayout(1, 2));
+        maxArrivalTimePanel.setBackground(Color.WHITE);
+        JLabel maxArrivalTimeLabel = new JLabel("Max arrival time");
+        maxArrivalTimeField = new JTextField(5);
+        maxArrivalTimePanel.add(maxArrivalTimeLabel);
+        maxArrivalTimePanel.add(maxArrivalTimeField);
+        panel.add(maxArrivalTimePanel);
 
         JPanel numberOfServersPanel = new JPanel();
         numberOfServersPanel.setLayout(new GridLayout(1, 2));
@@ -93,16 +112,25 @@ public class Configuration extends JFrame {
         panel.add(strategyPanel);
 
 
-        timeLimitField.setText("20");
-        maxProcessingTimeField.setText("5");
-        minProcessingTimeField.setText("2");
-        numberOfServersField.setText("3");
-        numberOfClientsField.setText("20");
+        timeLimitField.setText("60");
+        maxProcessingTimeField.setText("7");
+        minProcessingTimeField.setText("1");
+        minArrivalTimeField.setText("2");
+        maxArrivalTimeField.setText("40");
+        numberOfServersField.setText("5");
+        numberOfClientsField.setText("50");
 
         JLabel emptySeparator = new JLabel(" ");
         panel.add(emptySeparator);
 
-        startButton = new JButton("Start");
+        JButton startButton = getStartButton();
+        panel.add(startButton);
+
+        setContentPane(panel);
+    }
+
+    private JButton getStartButton() {
+        JButton startButton = new JButton("Start");
         startButton.setFont(new Font("Arial", Font.BOLD, 14));
         startButton.setBackground(Color.LIGHT_GRAY);
         startButton.setForeground(Color.WHITE);
@@ -112,18 +140,25 @@ public class Configuration extends JFrame {
             int minProcessingTime;
             int numberOfServers;
             int numberOfClients;
+            int minArrivalTime;
+            int maxArrivalTime;
             StrategyPolicy strategyPolicy = strategyBox.getSelectedIndex() == 0 ? StrategyPolicy.SHORTEST_QUEUE : StrategyPolicy.SHORTEST_TIME;
 
             try{
-                timeLimit = Integer.parseInt(timeLimitField.getText());
-                maxProcessingTime = Integer.parseInt(maxProcessingTimeField.getText());
-                minProcessingTime = Integer.parseInt(minProcessingTimeField.getText());
-                numberOfServers = Integer.parseInt(numberOfServersField.getText());
-                numberOfClients = Integer.parseInt(numberOfClientsField.getText());
-                if(timeLimit <= 0 || maxProcessingTime <= 0 || minProcessingTime <= 0 || numberOfServers <= 0 || numberOfClients <= 0){
+                timeLimit = Integer.parseInt(timeLimitField.getText().trim());
+                maxProcessingTime = Integer.parseInt(maxProcessingTimeField.getText().trim());
+                minProcessingTime = Integer.parseInt(minProcessingTimeField.getText().trim());
+                numberOfServers = Integer.parseInt(numberOfServersField.getText().trim());
+                numberOfClients = Integer.parseInt(numberOfClientsField.getText().trim());
+                minArrivalTime = Integer.parseInt(minArrivalTimeField.getText().trim());
+                maxArrivalTime = Integer.parseInt(maxArrivalTimeField.getText().trim());
+                if(timeLimit <= 0 || maxProcessingTime <= 0 || minProcessingTime <= 0 || numberOfServers <= 0 || numberOfClients <= 0 || minArrivalTime <= 0 || maxArrivalTime <= 0){
                     throw new NumberFormatException();
                 }
                 if(maxProcessingTime < minProcessingTime){
+                    throw new NumberFormatException();
+                }
+                if(maxArrivalTime < minArrivalTime){
                     throw new NumberFormatException();
                 }
             }
@@ -131,12 +166,10 @@ public class Configuration extends JFrame {
                 JOptionPane.showMessageDialog(null, "Invalid input");
                 return;
             }
-            Configuration.this.dispose();
-            SimulationView simulationView = new SimulationView(timeLimit, maxProcessingTime, minProcessingTime, numberOfServers, numberOfClients, strategyPolicy);
+            ConfigurationView.this.dispose();
+            SimulationView simulationView = new SimulationView(timeLimit, maxProcessingTime, minProcessingTime, maxArrivalTime,minArrivalTime,numberOfServers, numberOfClients, strategyPolicy);
             simulationView.setVisible(true);
         });
-        panel.add(startButton);
-
-        setContentPane(panel);
+        return startButton;
     }
 }

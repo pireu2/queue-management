@@ -13,16 +13,20 @@ public class SimulationView extends JFrame {
     private final SimulationManager manager;
     private final int numberOfServers;
 
-    public SimulationView(int timeLimit,int maxProcessingTime,int minProcessingTime,int numberOfServers,int numberOfClients,StrategyPolicy strategyPolicy){
+    public SimulationView(int timeLimit,int maxProcessingTime,int minProcessingTime,int maxArrivalTime, int minArrivalTime,int numberOfServers,int numberOfClients,StrategyPolicy strategyPolicy){
         setTitle("Queue Management System");
         setSize(500, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.numberOfServers = numberOfServers;
-        manager = new SimulationManager(this,timeLimit,maxProcessingTime,minProcessingTime,numberOfServers,numberOfClients,strategyPolicy);
+        manager = new SimulationManager(this,timeLimit,maxProcessingTime,minProcessingTime,maxArrivalTime,minArrivalTime,numberOfServers,numberOfClients,strategyPolicy);
         prepareGui();
         Thread t = new Thread(manager);
         t.start();
+    }
+
+    public void showResults(double averageWaitingTime, double averageServiceTime, int peakHour){
+        JOptionPane.showMessageDialog(this, "Average waiting time: " + averageWaitingTime + "\nAverage service time: " + averageServiceTime + "\nPeak hour: " + peakHour);
     }
 
     public void update(){
@@ -55,6 +59,9 @@ public class SimulationView extends JFrame {
         panel.setBackground(Color.WHITE);
         panel.setLayout(new GridLayout(numberOfServers, 1));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
 
         for(int i = 0; i < numberOfServers; i++){
             JPanel serverPanel = new JPanel();
@@ -74,7 +81,10 @@ public class SimulationView extends JFrame {
             serverPanel.add(tasksList);
             panel.add(serverPanel);
         }
-        return panel;
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        return mainPanel;
     }
 
     private JPanel prepareWaitingList(){

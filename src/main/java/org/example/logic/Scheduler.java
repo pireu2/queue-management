@@ -22,6 +22,24 @@ public class Scheduler {
             strategy = new TimeStrategy();
         }
     }
+    public boolean allServersEmpty(){
+        for(Server server : servers){
+            if(server.getNoTasks() != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int getServersActive(){
+        int count = 0;
+        for(Server server : servers){
+            if(server.getNoTasks() != 0){
+                count++;
+            }
+        }
+        return count;
+    }
 
     public ArrayList<Server> getServers(){
         return servers;

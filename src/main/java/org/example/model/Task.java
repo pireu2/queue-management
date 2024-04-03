@@ -4,6 +4,7 @@ public class Task {
     private final int Id;
     private final int arrivalTime;
     private int serviceTime;
+    private int waitingTime;
 
     public Task(int Id, int arrivalTime, int serviceTime){
         this.Id = Id;
@@ -29,5 +30,11 @@ public class Task {
         if(serviceTime > 0){
             serviceTime--;
         }
+    }
+    public int getWaitingTime(){
+        return waitingTime;
+    }
+    public void incrementWaitingTime(){
+        waitingTime++;
     }
 }

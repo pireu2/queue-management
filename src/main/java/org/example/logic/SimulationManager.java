@@ -4,7 +4,6 @@ import org.example.gui.SimulationView;
 import org.example.model.Server;
 import org.example.model.Task;
 
-import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,29 +12,30 @@ import java.util.Iterator;
 
 public class SimulationManager  implements Runnable{
     public int currentTime = 0;
-    private SimulationView view;
-    private int timeLimit;
-    private int maxProcessingTime;
-    private int minProcessingTime;
-    private int numberOfServers;
-    private int numberOfClients;
-    private StrategyPolicy strategyPolicy;
-    private Scheduler scheduler;
-    private ArrayList<Task> generatedTasks;
-    private Logger logger;
+    private final SimulationView view;
+    private final int timeLimit;
+    private final int maxProcessingTime;
+    private final int minProcessingTime;
+    private final int maxArrivalTime;
+    private final int minArrivalTime;
+    private final int numberOfServers;
+    private final Scheduler scheduler;
+    private final ArrayList<Task> generatedTasks;
+    private final Logger logger;
+    private int peakHour = -1;
 
-    public SimulationManager(SimulationView view, int timeLimit, int maxProcessingTime, int minProcessingTime, int numberOfServers, int numberOfClients, StrategyPolicy strategyPolicy){
+    public SimulationManager(SimulationView view, int timeLimit, int maxProcessingTime, int minProcessingTime, int maxArrivalTime,int minArrivalTime,int numberOfServers, int numberOfClients, StrategyPolicy strategyPolicy){
         this.timeLimit = timeLimit;
         this.maxProcessingTime = maxProcessingTime;
         this.minProcessingTime = minProcessingTime;
         this.numberOfServers = numberOfServers;
-        this.numberOfClients = numberOfClients;
-        this.strategyPolicy = strategyPolicy;
+        this.maxArrivalTime = maxArrivalTime;
+        this.minArrivalTime = minArrivalTime;
         this.view = view;
-        scheduler = new Scheduler(this.numberOfServers, this.numberOfClients, this.strategyPolicy);
+        scheduler = new Scheduler(numberOfServers, numberOfClients, strategyPolicy);
         generatedTasks = new ArrayList<>();
-        generateNRandomTasks(this.numberOfClients);
-        for(int i = 0; i < this.numberOfServers; i++){
+        generateNRandomTasks(numberOfClients);
+        for(int i = 0; i < numberOfServers; i++){
             scheduler.addServer();
         }
         logger = new Logger();
@@ -49,27 +49,24 @@ public class SimulationManager  implements Runnable{
     }
 
     public void run(){
+        logger.log("Simulation started");
         try {
             logger.writer = new BufferedWriter(new FileWriter("log.txt")); // Overwrite the existing content of the log file
         } catch (IOException e) {
             e.printStackTrace();
         }
         currentTime = 0;
+        int peakServer = 0;
         while(currentTime <= timeLimit){
-            logger.log(
-                    "Time: " + currentTime
-            );
-            for(Server server : scheduler.getServers()){
-                logger.log(
-                        "\tServer " + scheduler.getServers().indexOf(server) + " has " + server.getNoTasks() + " tasks and a waiting period of " + server.getWaitingPeriod()
-                );
-                for(Task task : server.getTasks()){
-                    logger.log(
-                            "\t\tTask " + task.getId() + " has " + task.getServiceTime() + " remaining service time and arrived at " + task.getArrivalTime()
-                    );;
-                }
-            }
+            logger.logTask(scheduler, currentTime);
             view.update();
+            if(generatedTasks.isEmpty() && scheduler.allServersEmpty()){
+                break;
+            }
+            if (peakServer < scheduler.getServersActive()) {
+                peakServer = scheduler.getServersActive();
+                peakHour = currentTime;
+            }
             Iterator<Task> taskIterator = generatedTasks.iterator();
             while(taskIterator.hasNext()){
                 Task task = taskIterator.next();
@@ -86,24 +83,46 @@ public class SimulationManager  implements Runnable{
             }
             currentTime++;
         }
+        stop();
+    }
 
+    private void stop(){
         for(Server server : scheduler.getServers()){
             server.setSimEnd(true);
         }
+        double averageWaitingTime = getAverageWaitingTime();
+        double averageServiceTime = getAverageServiceTime();
+        logger.log("Simulation ended");
+        logger.log("Average waiting time: " + averageWaitingTime);
+        logger.log("Average service time: " + averageServiceTime);
+        logger.log("Peak hour: " + peakHour);
+        view.showResults(averageWaitingTime, averageServiceTime, peakHour);
     }
-
     private void generateNRandomTasks(int n){
         for(int i = 0; i < n; i++){
-            int arrivalTime = (int)(Math.random() * (timeLimit - 1)) + 1;
+            int arrivalTime = (int)(Math.random() * (maxArrivalTime - minArrivalTime)) + minArrivalTime;
             int serviceTime = (int)(Math.random() * (maxProcessingTime - minProcessingTime) + minProcessingTime);
             Task task = new Task(i, arrivalTime, serviceTime);
             generatedTasks.add(task);
         }
     }
+    private double getAverageServiceTime(){
+        double sum = 0;
+        for(Server server : scheduler.getServers()){
+            sum += server.getAverageServiceTime();
+        }
+        return sum / numberOfServers;
+    }
+    private double getAverageWaitingTime(){
+        double sum = 0;
+        for(Server server : scheduler.getServers()){
+            sum += server.getAverageWaitingTime();
+        }
+        return sum / numberOfServers;
+    }
 
-    private class Logger{
+    private static class Logger{
         private BufferedWriter writer;
-
         public Logger(){
             try {
                 writer = new BufferedWriter(new FileWriter("log.txt", true));
@@ -111,7 +130,6 @@ public class SimulationManager  implements Runnable{
                 e.printStackTrace();
             }
         }
-
         public void log(String message){
             try {
                 writer.write(message);
@@ -119,6 +137,21 @@ public class SimulationManager  implements Runnable{
                 writer.flush();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        public void logTask(Scheduler scheduler, int currentTime){
+            this.log(
+                    "Time: " + currentTime
+            );
+            for(Server server : scheduler.getServers()){
+                this.log(
+                        "\tServer " + scheduler.getServers().indexOf(server) + " has " + server.getNoTasks() + " tasks and a waiting period of " + server.getWaitingPeriod()
+                );
+                for(Task task : server.getTasks()){
+                    this.log(
+                            "\t\tTask " + task.getId() + " has " + task.getServiceTime() + " remaining service time and arrived at " + task.getArrivalTime()
+                    );;
+                }
             }
         }
     }

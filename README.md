@@ -1,0 +1,1 @@
+Multithreaded application made in java and swing used for managing tasks on different threads.

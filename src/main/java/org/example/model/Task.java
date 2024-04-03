@@ -1,14 +1,17 @@
 package org.example.model;
 
 public class Task {
-    private int Id;
-    private int arrivalTime;
+    private final int Id;
+    private final int arrivalTime;
     private int serviceTime;
 
     public Task(int Id, int arrivalTime, int serviceTime){
         this.Id = Id;
         this.arrivalTime = arrivalTime;
         this.serviceTime = serviceTime;
+    }
+    public String toString(){
+        return "Task " + Id + " [at=" + arrivalTime + ", st=" + serviceTime + "]";
     }
 
     public int getId(){

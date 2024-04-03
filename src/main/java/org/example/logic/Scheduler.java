@@ -4,10 +4,9 @@ import org.example.model.Server;
 import org.example.model.Task;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Scheduler {
-    private List<Server> servers;
+    private ArrayList<Server> servers;
     private int maxNoServers;
     private int maxTasksPerServer;
     private Strategy strategy;
@@ -24,7 +23,7 @@ public class Scheduler {
         }
     }
 
-    public List<Server> getServers(){
+    public ArrayList<Server> getServers(){
         return servers;
     }
 
@@ -34,6 +33,8 @@ public class Scheduler {
         }
         Server server = new Server(maxTasksPerServer);
         servers.add(server);
+        Thread t = new Thread(server);
+        t.start();
     }
 
     public void dispatchTask(Task task){

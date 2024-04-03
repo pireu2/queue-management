@@ -1,7 +1,13 @@
 package org.example;
 
+import org.example.gui.Configuration;
+
+import javax.swing.*;
+
 public class QueueManagementApp {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        JFrame frame =  new Configuration();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 }

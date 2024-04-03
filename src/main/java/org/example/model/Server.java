@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,10 +43,19 @@ public class Server implements Runnable{
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            if(t == null){
+                t = getCurrentTask();
+                continue;
+            }
             t.decrementServiceTime();
             waitingPeriod.addAndGet(-1);
             if (t.getServiceTime() == 0){
                 noTasks.addAndGet(-1);
+                try {
+                    tasks.take();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 t = getCurrentTask();
             }
         }
@@ -53,11 +63,7 @@ public class Server implements Runnable{
 
     private Task getCurrentTask(){
         Task t = null;
-        try {
-            t = tasks.take();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        t= tasks.peek();
         return t;
     }
 }

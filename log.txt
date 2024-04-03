@@ -1,0 +1,31 @@
+Time: 0
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+	Server 2 has 0 tasks and a waiting period of 0
+Time: 1
+	Server 0 has 1 tasks and a waiting period of 4
+		Task 1 has 4 remaining service time and arrived at 1
+	Server 1 has 1 tasks and a waiting period of 4
+		Task 4 has 4 remaining service time and arrived at 1
+	Server 2 has 0 tasks and a waiting period of 0
+Time: 2
+	Server 0 has 2 tasks and a waiting period of 7
+		Task 1 has 3 remaining service time and arrived at 1
+		Task 9 has 4 remaining service time and arrived at 2
+	Server 1 has 2 tasks and a waiting period of 7
+		Task 4 has 3 remaining service time and arrived at 1
+		Task 12 has 4 remaining service time and arrived at 2
+	Server 2 has 2 tasks and a waiting period of 6
+		Task 7 has 3 remaining service time and arrived at 2
+		Task 18 has 3 remaining service time and arrived at 2
+Time: 3
+	Server 0 has 3 tasks and a waiting period of 10
+		Task 1 has 2 remaining service time and arrived at 1
+		Task 9 has 4 remaining service time and arrived at 2
+		Task 6 has 4 remaining service time and arrived at 3
+	Server 1 has 2 tasks and a waiting period of 6
+		Task 4 has 2 remaining service time and arrived at 1
+		Task 12 has 4 remaining service time and arrived at 2
+	Server 2 has 2 tasks and a waiting period of 5
+		Task 7 has 2 remaining service time and arrived at 2
+		Task 18 has 3 remaining service time and arrived at 2

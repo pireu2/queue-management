@@ -2,6 +2,7 @@ package org.example.model;
 
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Server implements Runnable{
@@ -9,18 +10,19 @@ public class Server implements Runnable{
     private final AtomicInteger noTasks;
     private final AtomicInteger waitingPeriod;
     private final ArrayList<Integer> waitingTimes;
-    private int totalServiceTime = 0;
-    private boolean simEnd;
+    private final AtomicInteger totalServiceTime;
+    private AtomicBoolean simEnd;
     public void setSimEnd(boolean simEnd) {
-        this.simEnd = simEnd;
+        this.simEnd = new AtomicBoolean(simEnd);
     }
 
     public Server(int maxNoTasks){
-        tasks = new ArrayBlockingQueue<Task>(maxNoTasks);
+        tasks = new ArrayBlockingQueue<>(maxNoTasks);
         noTasks = new AtomicInteger(0);
         waitingPeriod = new AtomicInteger(0);
         waitingTimes = new ArrayList<>();
-        simEnd = false;
+        simEnd = new AtomicBoolean(false);
+        totalServiceTime = new AtomicInteger(0);
     }
     public void addTask(Task t){
         tasks.add(t);
@@ -43,12 +45,12 @@ public class Server implements Runnable{
         }
         return sum / waitingTimes.size();
     }
-    public int getAverageServiceTime(){
-        return  totalServiceTime ;
+    public int getServiceTime(){
+        return  totalServiceTime.get() ;
     }
     public void run(){
         Task t = getCurrentTask();
-        while(!simEnd){
+        while(!simEnd.get() || t != null){
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -60,7 +62,7 @@ public class Server implements Runnable{
             }
             incrementWaitingTime();
             t.decrementServiceTime();
-            totalServiceTime++;
+            totalServiceTime.getAndIncrement();
             waitingPeriod.addAndGet(-1);
             if (t.getServiceTime() == 0){
                 noTasks.addAndGet(-1);
@@ -76,7 +78,7 @@ public class Server implements Runnable{
     }
 
     private Task getCurrentTask(){
-        Task t = null;
+        Task t;
         t= tasks.peek();
         return t;
     }

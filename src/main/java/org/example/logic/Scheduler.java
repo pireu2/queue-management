@@ -6,15 +6,13 @@ import org.example.model.Task;
 import java.util.ArrayList;
 
 public class Scheduler {
-    private ArrayList<Server> servers;
-    private int maxNoServers;
-    private int maxTasksPerServer;
-    private Strategy strategy;
+    private final ArrayList<Server> servers;
+    private final int maxNoServers;
+    private final Strategy strategy;
 
     public Scheduler(int maxNoServers, int maxTasksPerServer, StrategyPolicy policy){
         servers = new ArrayList<>();
         this.maxNoServers = maxNoServers;
-        this.maxTasksPerServer = maxTasksPerServer;
         if(policy == StrategyPolicy.SHORTEST_QUEUE){
             strategy = new ShortestQueueStrategy();
         }
@@ -45,14 +43,11 @@ public class Scheduler {
         return servers;
     }
 
-    public void addServer(){
+    public void addServer(Server server){
         if(servers.size() == maxNoServers){
             return;
         }
-        Server server = new Server(maxTasksPerServer);
         servers.add(server);
-        Thread t = new Thread(server);
-        t.start();
     }
 
     public void dispatchTask(Task task){

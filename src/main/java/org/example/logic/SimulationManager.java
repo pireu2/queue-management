@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SimulationManager  implements Runnable{
     public int currentTime = 0;
@@ -23,6 +25,7 @@ public class SimulationManager  implements Runnable{
     private final ArrayList<Task> generatedTasks;
     private final Logger logger;
     private int peakHour = -1;
+    private final ExecutorService executorService;
 
     public SimulationManager(SimulationView view, int timeLimit, int maxProcessingTime, int minProcessingTime, int maxArrivalTime,int minArrivalTime,int numberOfServers, int numberOfClients, StrategyPolicy strategyPolicy){
         this.timeLimit = timeLimit;
@@ -32,15 +35,16 @@ public class SimulationManager  implements Runnable{
         this.maxArrivalTime = maxArrivalTime;
         this.minArrivalTime = minArrivalTime;
         this.view = view;
+        executorService = Executors.newFixedThreadPool(100);
         scheduler = new Scheduler(numberOfServers, numberOfClients, strategyPolicy);
         generatedTasks = new ArrayList<>();
         generateNRandomTasks(numberOfClients);
         for(int i = 0; i < numberOfServers; i++){
-            scheduler.addServer();
+            Server server = new Server(numberOfClients);
+            scheduler.addServer(server);
         }
         logger = new Logger();
     }
-
     public ArrayList<Task> getGeneratedTasks(){
         return generatedTasks;
     }
@@ -50,8 +54,9 @@ public class SimulationManager  implements Runnable{
 
     public void run(){
         logger.log("Simulation started");
+        startServers();
         try {
-            logger.writer = new BufferedWriter(new FileWriter("log.txt")); // Overwrite the existing content of the log file
+            logger.writer = new BufferedWriter(new FileWriter("log.txt"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,6 +91,11 @@ public class SimulationManager  implements Runnable{
         stop();
     }
 
+    private void startServers(){
+        for(Server server : scheduler.getServers()){
+            executorService.submit(server);
+        }
+    }
     private void stop(){
         for(Server server : scheduler.getServers()){
             server.setSimEnd(true);
@@ -109,7 +119,7 @@ public class SimulationManager  implements Runnable{
     private double getAverageServiceTime(){
         double sum = 0;
         for(Server server : scheduler.getServers()){
-            sum += server.getAverageServiceTime();
+            sum += server.getServiceTime();
         }
         return sum / numberOfServers;
     }

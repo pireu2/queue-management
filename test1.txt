@@ -1,0 +1,79 @@
+Time: 0
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 1
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 2
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 3
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 4
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 5
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 6
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 7
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 8
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 9
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 10
+	Server 0 has 1 tasks and a waiting period of 3
+		Task 0 has 3 remaining service time and arrived at 10
+	Server 1 has 1 tasks and a waiting period of 2
+		Task 1 has 2 remaining service time and arrived at 10
+Time: 11
+	Server 0 has 1 tasks and a waiting period of 2
+		Task 0 has 2 remaining service time and arrived at 10
+	Server 1 has 1 tasks and a waiting period of 1
+		Task 1 has 1 remaining service time and arrived at 10
+Time: 12
+	Server 0 has 1 tasks and a waiting period of 1
+		Task 0 has 1 remaining service time and arrived at 10
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 13
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 14
+	Server 0 has 1 tasks and a waiting period of 2
+		Task 2 has 2 remaining service time and arrived at 14
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 15
+	Server 0 has 1 tasks and a waiting period of 1
+		Task 2 has 1 remaining service time and arrived at 14
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 16
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 17
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 18
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 19
+	Server 0 has 1 tasks and a waiting period of 2
+		Task 3 has 2 remaining service time and arrived at 19
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 20
+	Server 0 has 1 tasks and a waiting period of 1
+		Task 3 has 1 remaining service time and arrived at 19
+	Server 1 has 0 tasks and a waiting period of 0
+Time: 21
+	Server 0 has 0 tasks and a waiting period of 0
+	Server 1 has 0 tasks and a waiting period of 0
+Simulation ended
+Average waiting time: 2.166666666666667
+Average service time: 4.5
+Peak hour: 10
